@@ -1,32 +1,32 @@
-GET http://localhost:4000/ad
+GET http://localhost:4000/ads
 
 ###
 
-POST http://localhost:4000/ad
+GET http://localhost:4000/ads/4
+
+###
+
+POST http://localhost:4000/ads
 Content-Type: application/json
 
  {
-    "id": 3,
     "title": "iPod",
     "description":
       "My iPod is blue and works fine",
     "owner": "anais@gmail.com",
     "price": 50,
-    "picture":
-      "https://images.lecho.be/view?iid=dc:113129565&context=ONLINE&ratio=16/9&width=640&u=1508242455000",
-    "location": "Toulouse",
-    "createdAt": "2023-09-05T10:13:14.755Z"
+    "location": "Toulouse"
   }
 
 ### 
 
-DELETE http://localhost:4000/ad/3
+DELETE http://localhost:4000/ads/3
 
 ###
 
-PATCH http://localhost:4000/ad/1
+PATCH http://localhost:4000/ads/1
 Content-Type: application/json
 
 {
-  "title" : "A super bike to sell"
+  "title" : "Jeans troués"
 }
