@@ -1,6 +1,8 @@
+import "reflect-metadata";
 import express, { Request, Response } from "express";
 import sqlite from "sqlite3";
-import { Ad } from "../types";
+import { dataSource } from "./config/db";
+import { Ad } from "./entities/ad";
 
 const db = new sqlite.Database("the_good_corner.sqlite");
 
@@ -13,85 +15,88 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
 
-app.get("/ads", (req: Request, res: Response) => {
-  db.all("SELECT * FROM ad", (err, rows: Ad[]) => {
-    if (!err) return res.send(rows);
-    console.log(err);
+app.get("/ads", async (req, res) => {
+  try {
+    const ads = await Ad.find();
+    res.send(ads);
+  } catch (error) {
+    console.error(error);
     res.sendStatus(500);
-  });
+  }
 });
 
-app.post("/ads", (req: Request, res: Response) => {
-  const newAd: Ad = {
-    ...req.body,
-    createdAt: new Date().toISOString(),
-  };
+app.get("/ads/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const ad = await Ad.findOneBy({ id });
 
-  db.run(
-    "INSERT INTO ad (title, owner, description, price, picture, location, createdAt) VALUES ($title, $owner, $description, $price, $picture, $location, $createdAt)",
-    {
-      $title: newAd.title,
-      $owner: newAd.owner,
-      $description: newAd.description,
-      $price: newAd.price,
-      $picture: newAd.picture,
-      $location: newAd.location,
-      $createdAt: newAd.createdAt,
-    },
-    function (this: any, err: any) {
-      if (!err) return res.send({ ...newAd, id: this.lastID });
-      console.log(err);
-      res.sendStatus(500);
+    if (ad === null) return res.sendStatus(422);
+    res.send(ad);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.post("/ads", (req, res) => {
+  try {
+    const ad = new Ad();
+
+    ad.title = req.body.title;
+    ad.description = req.body.description;
+    ad.owner = req.body.owner;
+    ad.price = req.body.price;
+    ad.picture = req.body.picture;
+    ad.location = req.body.location;
+    ad.createdAd = req.body.createdAd;
+
+    ad.save();
+
+    res.send(ad);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.delete("/ads/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const ad = await Ad.findOneBy({ id });
+
+    if (ad === null) return res.sendStatus(404);
+
+    res.send("Ok");
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+app.put("/ads/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const ad = await Ad.findOneBy({ id });
+
+    if (ad !== null) {
+      ad.title = req.body.title;
+      ad.description = req.body.description;
+      ad.owner = req.body.owner;
+      ad.price = req.body.price;
+      ad.picture = req.body.picture;
+      ad.location = req.body.location;
+      ad.createdAd = req.body.createdAd;
+
+      ad.save();
     }
-  );
+    res.send(ad);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
 });
 
-app.delete("/ads/:id", (req: Request, res: Response) => {
-  db.get("SELECT * FROM ad WHERE id = ?", [req.params.id], (err, row) => {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    if (!row) return res.sendStatus(404);
-    db.run("DELETE FROM ad WHERE id = ?", [req.params.id], (err: any) => {
-      if (!err) return res.sendStatus(204);
-      console.log(err);
-      res.sendStatus(500);
-    });
-  });
-});
-
-app.patch("/ads/:id", (req: Request, res: Response) => {
-  db.get("SELECT * FROM ad WHERE id = ?", [req.params.id], (err, row) => {
-    if (err) {
-      console.log(err);
-      return res.sendStatus(500);
-    }
-    if (!row) return res.sendStatus(404);
-
-    // creates a string with this shape : "title = $title, description = $description, ..."
-    const setProps = Object.keys(req.body)
-      .reduce<string[]>((acc, prop) => [...acc, `${prop} = $${prop}`], [])
-      .join(", ");
-
-    // creates an object with this shape : {$title: "title sent by client", "$description: " description sent by client", ...}
-    const propsToUpdate = Object.keys(req.body).reduce(
-      (acc, prop) => ({ ...acc, [`$${prop}`]: req.body[prop] }),
-      {}
-    );
-
-    db.run(
-      `UPDATE ad SET ${setProps} WHERE id = $id`,
-      { ...propsToUpdate, $id: req.params.id },
-      (err: any) => {
-        if (!err) return res.send({ ...row, ...req.body });
-        console.log(err);
-        res.sendStatus(500);
-      }
-    );
-  });
-});
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(port, async () => {
+  await dataSource.initialize();
+  console.log(`Server running on port ${port} 🚀`);
 });
