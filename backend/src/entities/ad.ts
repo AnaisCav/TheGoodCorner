@@ -4,7 +4,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
+import { Category } from "./category";
+import { Tag } from "./tag";
 
 @Entity()
 export class Ad extends BaseEntity {
@@ -31,4 +36,11 @@ export class Ad extends BaseEntity {
 
   @CreateDateColumn()
   createdAd: Date;
+
+  @ManyToOne(() => Category, (category) => category.ads)
+  category: Category;
+
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags: Tag[];
 }
