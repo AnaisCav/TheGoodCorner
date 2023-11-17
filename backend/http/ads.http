@@ -10,7 +10,7 @@ POST http://localhost:4000/ads
 Content-Type: application/json
 
  {
-    "title": "iPod",
+    "title": "iPod 6",
     "description":
       "My iPod is blue and works fine",
     "owner": "anais@gmail.com",
@@ -18,7 +18,7 @@ Content-Type: application/json
     "picture": "image.jpg",
     "location": "Toulouse",
     "category": 1,
-    "tags": [1]
+    "tags": [{"id": 1}, {"id": 2}]
   }
 
 ### 
