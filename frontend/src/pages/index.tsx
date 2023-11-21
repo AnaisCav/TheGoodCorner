@@ -1,13 +1,12 @@
-import Header from "../components/Header";
+import Layout from "@/components/Layout";
 import RecentAds from "../components/RecentAds";
 
 export default function Home() {
   return (
     <>
-      <main className="main-content">
-        <Header />
+      <Layout pageTitle="Accueil">
         <RecentAds />
-      </main>
+      </Layout>
     </>
   );
 }

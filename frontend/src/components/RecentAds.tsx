@@ -4,40 +4,46 @@ import AdCard, { AdCardProps } from "./AdCard";
 const RecentAds = () => {
   const ads: AdCardProps[] = [
     {
+      id: 1,
       imgUrl: "/images/table.webp",
-      link: "/ads/table",
+      link: "/ad/1",
       price: 120,
-      title: "Table,",
+      title: "Table",
     },
     {
+      id: 2,
       imgUrl: "/images/dame-jeanne.webp",
-      link: "/ads/dame-jeanne",
+      link: "/ad/2",
       price: 75,
-      title: "Dame-jeanne,",
+      title: "Dame-jeanne",
     },
     {
+      id: 3,
       imgUrl: "/images/vide-poche.webp",
-      link: "/ads/vide-poche",
+      link: "/ad/3",
       price: 4,
-      title: "Vide-poche,",
+      title: "Vide-poche",
     },
     {
+      id: 4,
       imgUrl: "/images/vaisselier.webp",
-      link: "/ads/vaisselier",
+      link: "/ad/4",
       price: 900,
-      title: "Vaisselier,",
+      title: "Vaisselier",
     },
     {
+      id: 5,
       imgUrl: "/images/bougie.webp",
-      link: "/ads/bougie",
+      link: "/ad/5",
       price: 8,
-      title: "Bougie,",
+      title: "Bougie",
     },
     {
+      id: 6,
       imgUrl: "/images/porte-magazine.webp",
-      link: "/ads/porte-magazine",
+      link: "/ad/6",
       price: 45,
-      title: "Porte-magazine,",
+      title: "Porte-magazine",
     },
   ];
   return (
@@ -46,11 +52,12 @@ const RecentAds = () => {
       <section className="recent-ads">
         {ads.map((ad) => (
           <AdCard
+            key={ad.id}
+            id={ad.id}
             imgUrl={ad.imgUrl}
             link={ad.link}
             price={ad.price}
             title={ad.title}
-            key={ad.title}
           />
         ))}
       </section>
