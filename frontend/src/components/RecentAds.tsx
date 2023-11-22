@@ -1,67 +1,25 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import AdCard, { AdCardProps } from "./AdCard";
 
 const RecentAds = () => {
   const [total, setTotal] = useState(0);
-
-  const everyRender = () => {
-    console.log("This will be executed after every render");
-  };
+  const [ads, setAds] = useState<AdCardProps[]>([]);
 
   useEffect(() => {
-    const firstRenderOnly = () => {
-      setTotal(1);
-      console.log(
-        "This will be executed after the first render only. Even if I change the state"
-      );
+    const fetchData = async () => {
+      try {
+        const result = await axios.get<AdCardProps[]>(
+          "http://localhost:4000/ads"
+        );
+        setAds(result.data);
+      } catch (err) {
+        console.log("Error", err);
+      }
     };
-    firstRenderOnly();
+    fetchData();
   }, []);
 
-  const ads: AdCardProps[] = [
-    {
-      id: 1,
-      imgUrl: "/images/table.webp",
-      link: "/ad/1",
-      price: 120,
-      title: "Table",
-    },
-    {
-      id: 2,
-      imgUrl: "/images/dame-jeanne.webp",
-      link: "/ad/2",
-      price: 75,
-      title: "Dame-jeanne",
-    },
-    {
-      id: 3,
-      imgUrl: "/images/vide-poche.webp",
-      link: "/ad/3",
-      price: 4,
-      title: "Vide-poche",
-    },
-    {
-      id: 4,
-      imgUrl: "/images/vaisselier.webp",
-      link: "/ad/4",
-      price: 900,
-      title: "Vaisselier",
-    },
-    {
-      id: 5,
-      imgUrl: "/images/bougie.webp",
-      link: "/ad/5",
-      price: 8,
-      title: "Bougie",
-    },
-    {
-      id: 6,
-      imgUrl: "/images/porte-magazine.webp",
-      link: "/ad/6",
-      price: 45,
-      title: "Porte-magazine",
-    },
-  ];
   return (
     <>
       <h2>Annonces récentes</h2>
@@ -71,7 +29,7 @@ const RecentAds = () => {
           <div key={ad.id}>
             <AdCard
               id={ad.id}
-              imgUrl={ad.imgUrl}
+              picture={ad.picture}
               link={ad.link}
               price={ad.price}
               title={ad.title}

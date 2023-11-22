@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import express, { Request, Response } from "express";
+import cors from "cors";
 import db from "./db";
 import { Ad } from "./entities/ad";
 import { Category } from "./entities/category";
@@ -8,6 +9,7 @@ import { Tag } from "./entities/tag";
 const app = express();
 const port = 4000;
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
