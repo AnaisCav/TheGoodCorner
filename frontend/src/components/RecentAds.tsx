@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdCard, { AdCardProps } from "./AdCard";
 
 const RecentAds = () => {
+  const [total, setTotal] = useState(0);
+
+  const everyRender = () => {
+    console.log("This will be executed after every render");
+  };
+
+  useEffect(() => {
+    const firstRenderOnly = () => {
+      setTotal(1);
+      console.log(
+        "This will be executed after the first render only. Even if I change the state"
+      );
+    };
+    firstRenderOnly();
+  }, []);
+
   const ads: AdCardProps[] = [
     {
       id: 1,
@@ -49,16 +65,26 @@ const RecentAds = () => {
   return (
     <>
       <h2>Annonces récentes</h2>
+      <p>Prix total : {total} €</p>
       <section className="recent-ads">
         {ads.map((ad) => (
-          <AdCard
-            key={ad.id}
-            id={ad.id}
-            imgUrl={ad.imgUrl}
-            link={ad.link}
-            price={ad.price}
-            title={ad.title}
-          />
+          <div key={ad.id}>
+            <AdCard
+              id={ad.id}
+              imgUrl={ad.imgUrl}
+              link={ad.link}
+              price={ad.price}
+              title={ad.title}
+            />
+            <button
+              className="button"
+              onClick={() => {
+                setTotal(total + ad.price);
+              }}
+            >
+              Add price to total
+            </button>
+          </div>
         ))}
       </section>
     </>
