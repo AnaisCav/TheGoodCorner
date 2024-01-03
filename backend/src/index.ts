@@ -111,6 +111,37 @@ app.post("/categories", async (req, res) => {
   }
 });
 
+app.delete("/categories/:id", async (req: Request, res: Response) => {
+  try {
+    const categoryToDelete = await Category.findOneBy({
+      id: parseInt(req.params.id, 10),
+    });
+    if (!categoryToDelete) return res.sendStatus(404);
+    await categoryToDelete.remove();
+    res.sendStatus(204);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+});
+
+app.put("/categories/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const category = await Category.findOneBy({ id });
+
+    if (category !== null) {
+      category.name = req.body.name;
+
+      category.save();
+    }
+    res.send(category);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 app.get("/tags", async (req, res) => {
   try {
     const tags = await Tag.find();

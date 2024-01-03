@@ -15,13 +15,13 @@ Content-Type: application/json
 
 ### 
 
-DELETE http://localhost:4000/categories/4
+DELETE http://localhost:4000/categories/3
 
 ###
 
-PUT http://localhost:4000/categories/1
+PUT http://localhost:4000/categories/4
 Content-Type: application/json
 
 {
-  "name" : "Téléphonie"
+  "name" : "Electroménager"
 }

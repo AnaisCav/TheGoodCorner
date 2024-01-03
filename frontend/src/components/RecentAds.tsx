@@ -30,9 +30,9 @@ const RecentAds = () => {
             <AdCard
               id={ad.id}
               picture={ad.picture}
-              link={ad.link}
               price={ad.price}
               title={ad.title}
+              link={`/ads/${ad.id}`}
             />
             <button
               className="button"

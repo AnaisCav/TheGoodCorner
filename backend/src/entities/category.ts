@@ -13,7 +13,7 @@ export class Category extends BaseEntity {
   id: number;
 
   @Column()
-  Name: string;
+  name: string;
 
   @OneToMany(() => Ad, (ad) => ad.category)
   ads: Ad[];
