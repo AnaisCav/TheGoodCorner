@@ -1,5 +1,9 @@
 import Layout from "@/components/Layout";
-import { useLoginMutation, useProfileQuery } from "@/graphql/generated/schema";
+import {
+  useLoginMutation,
+  useLogoutMutation,
+  useProfileQuery,
+} from "@/graphql/generated/schema";
 import { Tag } from "@/types";
 import { FormEvent, useState } from "react";
 
@@ -20,6 +24,7 @@ function validatePassword(p: string) {
 export default function Login() {
   const [error, setError] = useState("");
   const [login] = useLoginMutation();
+  const [logout] = useLogoutMutation();
   const { data: currentUser, client } = useProfileQuery({
     errorPolicy: "ignore",
   });
@@ -49,7 +54,18 @@ export default function Login() {
   return (
     <Layout pageTitle="Se connecter">
       {currentUser ? (
-        <div>Connecté en tant que {currentUser.profile.email}</div>
+        <div className="pt-4">
+          <p>Connecté en tant que {currentUser.profile.email}</p>
+          <button
+            className="btn btn-warning text-white mt-12 w-full"
+            onClick={async () => {
+              await logout();
+              client.resetStore();
+            }}
+          >
+            Se déconnecter
+          </button>
+        </div>
       ) : (
         <>
           <h1 className="pt-6 pb-6 text-2xl">Se connecter</h1>

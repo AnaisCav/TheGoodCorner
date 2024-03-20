@@ -5,20 +5,20 @@ import jwt from "jsonwebtoken";
 import env from "./env";
 import User from "./entities/User";
 
-export const authChecker: AuthChecker<Context> = async (
-  { root, args, context, info },
-  roles
-) => {
-  const { token } = cookie.parse(
-    (context.req.headers["cookie"] as string) || ""
-  );
+export const authChecker: AuthChecker<Context> = async ({ context }, roles) => {
+  const { headers } = context.req;
+  const tokenInCookie = cookie.parse(headers.cookie ?? "").token;
+  const tokenInAuthHeaders = headers.authorization?.split(" ")[1];
+
+  const token = tokenInAuthHeaders ?? tokenInCookie;
+  if (typeof token !== "string") return false;
 
   const decoded = (await jwt.verify(token, env.JWT_PRIVATE_KEY)) as any;
-  console.log({ decoded });
-
   if (!decoded?.userId) return false;
 
-  context.currentUser = await User.findOneByOrFail({ id: decoded?.userId });
+  const currentUser = await User.findOneByOrFail({ id: decoded?.userId });
+  if (currentUser === null) return false;
 
+  context.currentUser = currentUser;
   return true;
 };
