@@ -1,5 +1,9 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from "type-graphql";
-import User, { LoginInput, NewUserInput } from "../entities/User";
+import User, {
+  LoginInput,
+  NewUserInput,
+  UpdateUserInput,
+} from "../entities/User";
 import { GraphQLError } from "graphql";
 import { verify } from "argon2";
 import jwt from "jsonwebtoken";
@@ -57,6 +61,21 @@ class UserResolver {
   async logout(@Ctx() ctx: Context) {
     ctx.res.clearCookie("token");
     return true;
+  }
+
+  @Authorized()
+  @Mutation(() => User)
+  async updateProfile(
+    @Ctx() ctx: Context,
+    @Arg("data", { validate: true }) data: UpdateUserInput
+  ) {
+    if (!ctx.currentUser)
+      throw new GraphQLError("You need to be logged in to update your profile");
+
+    if (data.avatar) ctx.currentUser.avatar = data.avatar;
+    if (data.nickname) ctx.currentUser.nickname = data.nickname;
+
+    return ctx.currentUser.save();
   }
 }
 
