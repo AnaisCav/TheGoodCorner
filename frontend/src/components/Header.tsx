@@ -2,10 +2,15 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import qs from "query-string";
-import { useCategoriesQuery } from "@/graphql/generated/schema";
+import {
+  useCategoriesQuery,
+  useLogoutMutation,
+  useProfileQuery,
+} from "@/graphql/generated/schema";
 
 export default function Header() {
   const router = useRouter();
+  const [logout] = useLogoutMutation();
 
   const { data } = useCategoriesQuery();
   const categories = data?.categories || [];
@@ -17,6 +22,10 @@ export default function Header() {
       setSearch(router.query.title);
     }
   }, [router.query.title]);
+
+  const { data: currentUser, client } = useProfileQuery({
+    errorPolicy: "ignore",
+  });
 
   const searchParams = qs.parse(window.location.search) as any;
 
@@ -66,8 +75,41 @@ export default function Header() {
         </form>
         <Link href="/post-ad" className="button link-button">
           <span className="mobile-short-label">Publier</span>
-          <span className="desktop-long-label">Publier une annonce</span>
+          <span className="desktop-long-label w-32 text-center">
+            Publier une annonce
+          </span>
         </Link>
+        {currentUser ? (
+          <>
+            <Link href="/profile" className="button link-button">
+              <span className="mobile-short-label">Profil</span>
+              <span className="desktop-long-label w-32 text-center">
+                Mon profil
+              </span>
+            </Link>
+            <Link
+              href="/login"
+              className="button link-button"
+              onClick={async () => {
+                await logout();
+                client.resetStore();
+                router.push("/");
+              }}
+            >
+              <span className="mobile-short-label">Profil</span>
+              <span className="desktop-long-label w-32 text-center">
+                Se déconnecter
+              </span>
+            </Link>
+          </>
+        ) : (
+          <Link href="/login" className="button link-button">
+            <span className="mobile-short-label">Profil</span>
+            <span className="desktop-long-label w-32 text-center">
+              Se connecter
+            </span>
+          </Link>
+        )}
       </div>
       <nav className="flex pl-2 h-[54px]">
         {categories.map((cat) => {

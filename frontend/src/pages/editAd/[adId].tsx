@@ -8,11 +8,16 @@ import {
   useAdDetailsQuery,
   useUpdateAdMutation,
   AdDetailsDocument,
+  useProfileQuery,
 } from "@/graphql/generated/schema";
 import { Tag } from "@/types";
 import uploadFile from "@/helpers/uploadFile";
 
 export default function EditAd() {
+  const { data: currentUser, client } = useProfileQuery({
+    errorPolicy: "ignore",
+  });
+
   const router = useRouter();
   const { adId: adIdStr } = router.query;
 
@@ -103,10 +108,10 @@ export default function EditAd() {
               <input
                 type="text"
                 name="owner"
-                defaultValue={ad?.owner}
+                defaultValue={ad.owner.nickname}
                 id="owner"
                 required
-                placeholder="Link"
+                disabled
                 className="input input-bordered w-full max-w-xs"
               />
             </div>

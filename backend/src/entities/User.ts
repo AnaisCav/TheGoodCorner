@@ -6,8 +6,15 @@ import {
   BeforeInsert,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
+import Ad from "./Ad";
+
+export enum UserRole {
+  Admin = "admin",
+  Visitor = "visitor",
+}
 
 @Entity()
 @ObjectType()
@@ -34,12 +41,20 @@ class User extends BaseEntity {
   @Column()
   hashedPassword: string;
 
+  @Field(() => [Ad])
+  @OneToMany(() => Ad, (ad) => ad.owner)
+  ads: Ad[];
+
   @Column({
     default:
       "https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png",
   })
   @Field()
   avatar: string;
+
+  @Field()
+  @Column({ enum: UserRole, default: UserRole.Visitor })
+  role: UserRole;
 }
 
 @InputType()
@@ -52,7 +67,7 @@ export class NewUserInput {
   @Field()
   nickname: string;
 
-  @Length(2, 30)
+  @Length(2, 300)
   @Field({ nullable: true })
   avatar?: string;
 
@@ -77,7 +92,7 @@ export class UpdateUserInput {
   @Field({ nullable: true })
   nickname?: string;
 
-  @Length(2, 30)
+  @Length(2, 300)
   @Field({ nullable: true })
   avatar?: string;
 }

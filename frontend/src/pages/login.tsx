@@ -5,6 +5,7 @@ import {
   useProfileQuery,
 } from "@/graphql/generated/schema";
 import { Tag } from "@/types";
+import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 
 function validatePassword(p: string) {
@@ -22,6 +23,7 @@ function validatePassword(p: string) {
 }
 
 export default function Login() {
+  const router = useRouter();
   const [error, setError] = useState("");
   const [login] = useLoginMutation();
   const [logout] = useLogoutMutation();
@@ -43,11 +45,11 @@ export default function Login() {
     try {
       const res = await login({ variables: { data: formJSON } });
       console.log({ res });
-      alert("Bienvenue");
     } catch (e: any) {
       setError("Identifiants incorrects");
     } finally {
       client.resetStore();
+      router.push("/");
     }
   };
 
@@ -71,7 +73,7 @@ export default function Login() {
           <h1 className="pt-6 pb-6 text-2xl">Se connecter</h1>
 
           <form onSubmit={handleSubmit} className="pb-12">
-            <div className="flex flex-wrap gap-6 mb-3">
+            <div className="flex flex-wrap justify-between gap-6 mb-3">
               <div className="form-control w-full max-w-xs">
                 <label className="label" htmlFor="email">
                   <span className="label-text">Email</span>

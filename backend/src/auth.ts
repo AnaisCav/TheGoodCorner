@@ -3,9 +3,12 @@ import { Context } from "./types";
 import cookie from "cookie";
 import jwt from "jsonwebtoken";
 import env from "./env";
-import User from "./entities/User";
+import User, { UserRole } from "./entities/User";
 
-export const authChecker: AuthChecker<Context> = async ({ context }, roles) => {
+export const authChecker: AuthChecker<Context> = async (
+  { context },
+  roles: string[] = []
+) => {
   const { headers } = context.req;
   const tokenInCookie = cookie.parse(headers.cookie ?? "").token;
   const tokenInAuthHeaders = headers.authorization?.split(" ")[1];
@@ -20,5 +23,6 @@ export const authChecker: AuthChecker<Context> = async ({ context }, roles) => {
   if (currentUser === null) return false;
 
   context.currentUser = currentUser;
-  return true;
+
+  return roles.length === 0 || roles.includes(currentUser.role);
 };
